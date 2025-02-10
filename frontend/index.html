@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Responsive Media Carousel</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body class="bg-gray-50 text-white">
+    <!-- ✅ Navbar -->
+    <nav
+      class="flex justify-between items-center px-6 py-4 bg-black border-b border-gray-700 relative z-50"
+    >
+      <!-- Left: Logo -->
+      <div class="flex items-center">
+        <img src="https://via.placeholder.com/150x50" alt="Logo" class="h-12" />
+      </div>
+
+      <!-- Center: Navigation Links (Desktop) -->
+      <ul class="hidden md:flex space-x-6 uppercase text-sm font-semibold">
+        <li><a href="#" class="nav-item">Home</a></li>
+        <li><a href="#" class="nav-item">Pages</a></li>
+        <li><a href="#" class="nav-item">Models</a></li>
+        <li><a href="#" class="nav-item">Appointment</a></li>
+        <li><a href="#" class="nav-item">FAQ</a></li>
+        <li><a href="#" class="nav-item">Blog</a></li>
+        <li><a href="#" class="nav-item">Contact</a></li>
+      </ul>
+
+      <!-- Right: Contact Details -->
+      <div class="hidden md:flex flex-col text-right">
+        <span class="text-pink-500 text-lg font-bold">(800) 543 4625</span>
+        <span class="text-gray-400 text-sm">24/7 free calls</span>
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <button id="menu-btn" class="md:hidden text-white text-2xl">☰</button>
+    </nav>
+
+    <!-- ✅ Mobile Menu (Now Fixed) -->
+    <div id="mobile-menu" class="mobile-menu">
+      <!-- Close Button -->
+      <span id="close-btn" class="close-btn">✖</span>
+
+      <ul class="space-y-6 uppercase text-lg font-semibold">
+        <li><a href="#" class="nav-item">Home</a></li>
+        <li><a href="#" class="nav-item">Pages</a></li>
+        <li><a href="#" class="nav-item">Models</a></li>
+        <li><a href="#" class="nav-item">Appointment</a></li>
+        <li><a href="#" class="nav-item">FAQ</a></li>
+        <li><a href="#" class="nav-item">Blog</a></li>
+        <li><a href="#" class="nav-item">Contact</a></li>
+      </ul>
+
+      <!-- Contact Details (Mobile) -->
+      <div class="mt-6 text-center">
+        <span class="text-pink-500 text-xl font-bold block"
+          >(800) 543 4625</span
+        >
+        <span class="text-gray-400 text-md">24/7 free calls</span>
+      </div>
+    </div>
+
+    <!-- ✅ JavaScript for Mobile Menu Toggle -->
+    <script>
+      const menuBtn = document.getElementById("menu-btn");
+      const closeBtn = document.getElementById("close-btn");
+      const mobileMenu = document.getElementById("mobile-menu");
+
+      menuBtn.addEventListener("click", () => {
+        mobileMenu.classList.add("show");
+      });
+
+      closeBtn.addEventListener("click", () => {
+        mobileMenu.classList.remove("show");
+      });
+    </script>
+
+    <!-- Hero Section (Custom Carousel) -->
+    <!-- Hero Section -->
+    <div class="container mx-auto mt-6">
+      <div class="carousel-container">
+        <div class="carousel-track" id="carousel-track">
+          <!-- Dynamic Content Will Be Injected Here -->
+        </div>
+
+        <!-- Prev/Next Buttons -->
+        <button class="prev-btn" id="prev-btn">❮</button>
+        <button class="next-btn" id="next-btn">❯</button>
+      </div>
+    </div>
+
+    <!-- JavaScript for Carousel -->
+    <script>
+      const apiUrl = "http://localhost:8080/api/entries/all"; // Replace with your actual backend URL
+      const track = document.getElementById("carousel-track");
+      const prevButton = document.getElementById("prev-btn");
+      const nextButton = document.getElementById("next-btn");
+      let currentIndex = 0;
+
+      async function fetchData() {
+        try {
+          const response = await fetch(apiUrl);
+          const data = await response.json();
+          displayEntries(data);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      }
+
+      function displayEntries(entries) {
+        track.innerHTML = ""; // Clear existing content
+
+        entries.forEach((entry) => {
+          const item = document.createElement("div");
+          item.classList.add("carousel-item");
+
+          item.innerHTML = `
+                    <img src="${entry.image}" alt="${entry.name}" />
+                    <div class="overlay">
+                        <h5 class="text-xl font-bold">${entry.name}</h5>
+                        <p class="text-sm">
+                            Category: ${entry.category} | Followers: ${entry.followers} <br>
+                            Age: ${entry.age} | Language: ${entry.language} <br>
+                            Profession: ${entry.profession}
+                        </p>
+                    </div>
+                `;
+
+          track.appendChild(item);
+        });
+
+        updateCarousel();
+      }
+
+      function updateCarousel() {
+        const totalItems = document.querySelectorAll(".carousel-item").length;
+        const itemsPerSlide =
+          window.innerWidth > 992 ? 4 : window.innerWidth > 768 ? 2 : 1;
+        const maxIndex = totalItems - itemsPerSlide;
+
+        if (currentIndex < 0) {
+          currentIndex = maxIndex;
+        } else if (currentIndex > maxIndex) {
+          currentIndex = 0;
+        }
+
+        const translateX = -currentIndex * (100 / itemsPerSlide) + "%";
+        track.style.transform = `translateX(${translateX})`;
+      }
+
+      prevButton.addEventListener("click", () => {
+        currentIndex--;
+        updateCarousel();
+      });
+
+      nextButton.addEventListener("click", () => {
+        currentIndex++;
+        updateCarousel();
+      });
+
+      window.addEventListener("resize", updateCarousel);
+
+      // Fetch data when page loads
+      fetchData();
+    </script>
+  </body>
+</html>

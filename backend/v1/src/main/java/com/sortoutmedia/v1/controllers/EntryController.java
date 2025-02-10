@@ -6,11 +6,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/entries")
+@CrossOrigin(origins = "http://127.0.0.1:5500") // Allow frontend to access backend
 public class EntryController {
 
     private final EntryService entryService;
