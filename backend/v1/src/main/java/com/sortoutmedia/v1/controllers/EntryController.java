@@ -32,9 +32,17 @@ public class EntryController {
                              @RequestParam String profession,
                              @RequestParam(required = false) MultipartFile image) throws Exception {
 
-        Entry entry = new Entry(null, name, category, followers, age, language, gender, profession, null);
-        return entryService.saveEntry(entry, image);
+        // ✅ Debugging: Check if image is received
+        if (image == null || image.isEmpty()) {
+            System.out.println("🚨 Image file is null or empty!");
+        } else {
+            System.out.println("✅ Image received: " + image.getOriginalFilename());
+        }
+
+        // ✅ Call the service to save the entry with Cloudinary image
+        return entryService.saveEntry(new Entry(null, name, category, followers, age, language, gender, profession, null), image);
     }
+
 
     // ✅ API to Fetch Entries by Category (No Pagination)
     @GetMapping("/categories/{category}")
@@ -42,9 +50,9 @@ public class EntryController {
         return entryService.getEntriesByCategory(category);
     }
 
-    // ✅ API to Fetch All Entries (No Pagination)
-    @GetMapping("/all/no-pagination")
-    public List<Entry> getAllEntriesWithoutPagination() {
+    // ✅ API to Fetch All Entries
+    @GetMapping("/all-list")
+    public List<Entry> getAllEntriesAsList() {
         return entryService.getAllEntries();
     }
 
